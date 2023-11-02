@@ -1,0 +1,67 @@
+@startuml
+!define primary_key(x) <b><color:#b8861b><&key></color> x</b>
+!define foreign_key(x) <color:#aaaaaa><&key></color> x
+!define column(x) <color:#efefef><&media-record></color> x
+!define table(x) entity x << (T, white) >>
+
+skinparam linetype ortho
+hide empty methods
+'hide methods
+
+table( customer ) {
+  primary_key( customerId ): INTEGER <<generated>>
+  column( username ): VARCHAR(16)
+  column( password ): VARCHAR(64)
+  column( fullName ): VARCHAR(50)
+  column( email ): VARCHAR(50)
+  column( phoneNumber ): VARCHAR(15)
+}
+
+table( employee ) {
+  primary_key( employeeId ): INTEGER <<generated>>
+  column( username ): VARCHAR(16)
+  column( password ): VARCHAR(64)
+  column( fullName ): VARCHAR(50)
+}
+
+table( vehicle ) {
+  primary_key( vehicleId ): INTEGER <<generated>>
+  foreign_key( customerId ): INTEGER <<FK>>
+  column( driver ): VARCHAR(50)
+  column( brandType ): VARCHAR(50)
+  column( color ): VARCHAR(24)
+  column( policeNumber ): VARCHAR(8)
+}
+
+table( booking ) {
+  primary_key( bookingId ): INTEGER <<generated>>
+  foreign_key( customerId ): INTEGER <<FK>>
+  foreign_key( vehicleId ): INTEGER <<FK>>
+  column( bookingDate ): DATETIME
+  column( status ): ENUM
+  column( baseFee ): INTEGER
+}
+
+table( transaction ) {
+  primary_key( transactionId ): INTEGER <<generated>>
+  foreign_key( bookingId ): INTEGER <<FK>>
+  foreign_key( employeeId ): INTEGER <<FK>>
+  column( totalFee ): INTEGER
+}
+
+table( history ) {
+  primary_key( historyId ): INTEGER <<generated>>
+  foreign_key( bookingId ): INTEGER <<FK>>
+  foreign_key( transactionId ): INTEGER <<FK>>
+  column( checkPoint ): DATETIME
+  column( status): ENUM
+}
+
+employee ||--|{ transaction
+customer ||-left-|{ vehicle
+customer ||--o{ booking
+booking }|--|| vehicle
+booking ||--o| transaction
+booking ||--|{  history
+
+@enduml
